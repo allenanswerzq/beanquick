@@ -22,17 +22,17 @@ message Date {
   int32 day = 3;
 }
 
-message Decimal {
+message DecimalDef {
   string strvalue = 1;
 }
 
 message Amount {
-  Decimal number = 1;
+  DecimalDef number = 1;
   string currency = 2;
 }
 
 message Cost {
-  Decimal number = 1;
+  DecimalDef number = 1;
   string currency = 2;
   Date date = 3;
   string label = 4;
@@ -92,7 +92,7 @@ message Pad {
 message Balance {
   string account = 3;
   Amount amount = 4;
-  Decimal tolerance = 5;
+  DecimalDef tolerance = 5;
   Amount diff_amount = 6;
 }
 
