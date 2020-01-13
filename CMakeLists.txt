@@ -3,6 +3,10 @@ cmake_minimum_required(VERSION 3.5)
 project(beanquick CXX)
 set(CMAKE_CXX_STANDARD 11)
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 list(APPEND CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_LIST_DIR}/CMake
   ${CMAKE_CURRENT_LIST_DIR}/CMake/copts
@@ -33,5 +37,9 @@ list(APPEND BEANQUICK_TEST_COMMON_LIBRARIES
   gmock
   ${CMAKE_THREAD_LIBS_INIT}
 )
+
+add_subdirectory(third_party/libfixed)
+
+# add_subdirectory(third_party/abseil-cpp)
 
 add_subdirectory(beanquick)

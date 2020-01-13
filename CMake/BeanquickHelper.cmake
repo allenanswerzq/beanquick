@@ -110,7 +110,7 @@ function(bean_cc_library)
       )
       target_compile_definitions(${_NAME} PUBLIC ${BEANQUICK_CC_LIB_DEFINES})
 
-      # Add all Qian targets to a a folder in the IDE for organization.
+      # Add all Beanquick targets to a a folder in the IDE for organization.
       if(BEANQUICK_CC_LIB_PUBLIC)
         set_property(TARGET ${_NAME} PROPERTY FOLDER ${BEANQUICK_IDE_FOLDER})
       elseif(BEANQUICK_CC_LIB_TESTONLY)

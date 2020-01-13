@@ -141,6 +141,7 @@ COPT_VARS = {
         # Google style does not use unsigned integers, though STL containers
         # have unsigned types.
         "-Wno-sign-compare",
+        "-O3"
     ],
     "BEANQUICK_GCC_TEST_FLAGS": [
         "-Wno-conversion-null",

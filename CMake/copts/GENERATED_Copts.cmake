@@ -89,6 +89,7 @@ list(APPEND BEANQUICK_GCC_FLAGS
     "-Wwrite-strings"
     "-Wno-missing-field-initializers"
     "-Wno-sign-compare"
+    "-O2"
 )
 
 list(APPEND BEANQUICK_GCC_TEST_FLAGS
