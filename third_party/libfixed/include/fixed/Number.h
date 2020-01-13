@@ -740,8 +740,10 @@ bool operator!= (const Number& lhs, const Number& rhs);
 //
 Number operator- (const Number& n);
 
-template <typename T>
-T& operator<< (T& out, const Number& n);
+// template <typename T>
+// T& operator<< (T& out, const Number& n);
+
+std::ostream& operator<< (std::ostream& out, const Number& n);
 
 template <typename T>
 inline Number::Number (
@@ -922,7 +924,7 @@ inline void Number::initSetValue (
 )
 {
     unsigned int bitsSum = (
-        firstBitSet_ (integerValue) +
+        Number::firstBitSet_ (integerValue) +
         shiftTable64 () [decimalPlaces].firstBitSet
     );
 
@@ -1248,8 +1250,7 @@ inline std::string Number::toString () const noexcept
     return os.str ();
 }
 
-template <typename T>
-inline T& operator<< (T& out, const Number& n)
+inline std::ostream& operator<< (std::ostream& out, const Number& n)
 {
     if (n.isNegative ())
     {

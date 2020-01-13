@@ -110,7 +110,7 @@ unsigned int maxOperandQuotient (
     );
 }
 
-unsigned int productMaxInternalPrecision (
+static unsigned int productMaxInternalPrecision (
     const unsigned int factor1DecimalPlaces,
     const unsigned int factor2DecimalPlaces,
     const unsigned int maxInternalDecimalPlaces
@@ -122,7 +122,7 @@ unsigned int productMaxInternalPrecision (
     );
 }
 
-unsigned int quotientMaxInternalPrecision (
+static unsigned int quotientMaxInternalPrecision (
     const unsigned int, // dividendDecimalPlaces
     const unsigned int, // divisorDecimalPlaces
     const unsigned int maxInternalDecimalPlaces

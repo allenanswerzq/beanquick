@@ -32,7 +32,7 @@
 
 namespace fixed {
 
-std::string uint128ToStr (__uint128_t v, bool negative = false)
+inline std::string uint128ToStr (__uint128_t v, bool negative = false)
 {
     char buf[64];
 
@@ -56,7 +56,7 @@ std::string uint128ToStr (__uint128_t v, bool negative = false)
     return std::string (buf);
 }
 
-std::string int128ToStr (const __int128_t& v)
+inline std::string int128ToStr (const __int128_t& v)
 {
     return uint128ToStr (absoluteValue<__uint128_t> (v), v < 0);
 }

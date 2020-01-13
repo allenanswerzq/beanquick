@@ -234,7 +234,7 @@ void Number::valueAutoResize () noexcept
             upsizeTo128 ();
         }
     }
-    else if (firstBitSet_ (value128_) <= FirstBitSet::maxBitPos<int64_t> ())
+    else if (Number::firstBitSet_ (value128_) <= FirstBitSet::maxBitPos<int64_t> ())
     {
         value64_    = static_cast<int64_t> (value128_);
         value64Set_ = true;
@@ -345,7 +345,7 @@ unsigned int Number::increaseDecimalPlacesBitCount (
 ) noexcept
 {
     return (
-        firstBitSet_ (val) +
+        Number::firstBitSet_ (val) +
         shiftTable64 () [targetDecimalPlaces - decimalPlaces ()].firstBitSet
     );
 }
@@ -695,7 +695,7 @@ void Number::mult64 (
 {
     assert (value64Set_ && rhs.value64Set_);
 
-    if ((firstBitSet_ (value64_) + firstBitSet_ (rhs.value64_)) >
+    if ((Number::firstBitSet_ (value64_) + Number::firstBitSet_ (rhs.value64_)) >
         FirstBitSet::maxBitPos<int64_t> ())
     {
         Number rhsCopy (rhs);
@@ -718,7 +718,7 @@ void Number::mult128 (
     rhs.upsizeTo128 ();
 
     unsigned int requiredBits =
-        firstBitSet_ (value128_) + firstBitSet_ (rhs.value128_);
+        Number::firstBitSet_ (value128_) + Number::firstBitSet_ (rhs.value128_);
 
     if (requiredBits > FirstBitSet::maxBitPos<__int128_t> ())
     {
@@ -967,7 +967,7 @@ void Number::div64 (
     const auto rds = requiredDividendShift;
 
     const auto shiftRoom =
-        FirstBitSet::maxBitPos<int64_t> () - firstBitSet_ (value64_);
+        FirstBitSet::maxBitPos<int64_t> () - Number::firstBitSet_ (value64_);
 
     const bool need128 =
         (rds > shiftTable64 ().MAX_DIGITS) ||
@@ -1004,7 +1004,7 @@ void Number::div128 (
     assert (requiredDividendShift <= shiftTable128 ().MAX_DIGITS);
 
     const auto shiftRoom =
-        FirstBitSet::maxBitPos<__int128_t> () - firstBitSet_ (value128_);
+        FirstBitSet::maxBitPos<__int128_t> () - Number::firstBitSet_ (value128_);
 
     if (shiftRoom >= shiftTable128 () [requiredDividendShift].firstBitSet)
     {

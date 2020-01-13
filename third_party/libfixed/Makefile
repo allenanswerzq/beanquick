@@ -55,17 +55,19 @@ TEST_OBJ := $(patsubst test/%,$(BUILD_OUTDIR)/%,$(TEST_SRC:.cpp=.o))
 
 CXX ?= g++
 
+DEBUG_FLAGS ?= -g -O3 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk   -Wall -Wextra -Wcast-qual -Wconversion-null -Wmissing-declarations -Woverlength-strings -Wpointer-arith -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -Wno-missing-field-initializers -Wno-sign-compare -std=gnu++11
+
 WARN_FLAGS ?= -Wall -Wextra -Werror
 DEBUG_FLAGS ?= -ggdb
-OPTIMIZATION_FLAGS ?= -O3
-ARCH_FLAGS ?= -m64
+# OPTIMIZATION_FLAGS ?= -O3
+# ARCH_FLAGS ?= -m64
 #OPTIMIZATION_FLAGS := -O0 -ftest-coverage -fprofile-arcs
 
 CXXFLAGS := -std=gnu++11 $(WARN_FLAGS) $(DEBUG_FLAGS) $(OPTIMIZATION_FLAGS) $(ARCH_FLAGS) $(INCS)
 
 ARFLAGS ?= crv
 
-all: lib test
+all: lib
 
 lib: $(BUILD_OUTDIR)/libfixed.a
 
