@@ -2,15 +2,14 @@
 #define BEANQUICK_DECIMAL_H_
 
 #include <iostream>
-#include <string>
 
-#include "beanquick.pb.h"
 #include "third_party/libfixed/include/fixed/Number.h"
 
 namespace beanquick {
 
-class Decimal {
-
+class Decimal : public ::fixed::Number {
+ public:
+  using ::fixed::Number::Number;
 };
 
 }  // namespace beanquick
