@@ -40,6 +40,9 @@ list(APPEND BEANQUICK_TEST_COMMON_LIBRARIES
 
 add_subdirectory(third_party/libfixed)
 
-# add_subdirectory(third_party/abseil-cpp)
+# include abseil path
+list(APPEND BEANQUICK_COMMON_INCLUDE_DIRS
+     ${CMAKE_CURRENT_SOURCE_DIR}/third_party/abseil)
+add_subdirectory(third_party/abseil)
 
 add_subdirectory(beanquick)

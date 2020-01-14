@@ -24,9 +24,25 @@ bean_cc_library(
 
 bean_cc_library(
   NAME
-    decimal
+    util
+  HDRS
+    "logging.h"
+  SRCS
+    "logging.cc"
+  COPTS
+    ${BEANQUICK_DEFAULT_COPTS}
+  PUBLIC
+)
+
+bean_cc_library(
+  NAME
+    core
   HDRS
     "decimal.h"
+    "amount.h"
+  DEPS
+    bean::util
+    bean::fixed
   COPTS
     ${BEANQUICK_DEFAULT_COPTS}
   PUBLIC
@@ -40,9 +56,20 @@ bean_cc_test(
   COPTS
     ${BEANQUICK_TEST_COPTS}
   DEPS
-    bean::decimal
-    bean::schema
-    bean::fixed
+    bean::core
     gmock_main
 )
+
+bean_cc_test(
+  NAME
+    amount_test
+  SRCS
+    "amount_test.cc"
+  COPTS
+    ${BEANQUICK_TEST_COPTS}
+  DEPS
+    bean::core
+    gmock_main
+)
+
 

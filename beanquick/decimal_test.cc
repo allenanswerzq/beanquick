@@ -21,6 +21,8 @@ TEST(TestDecimal, Ctor) {
   // Decimal d3();
   // EXPECT_EQ(d3, D("0"));
 
+  Decimal d3("100,034.12");
+
   std::ostringstream oss;
   oss << d.toString();
   EXPECT_EQ(oss.str(), "1.23");
