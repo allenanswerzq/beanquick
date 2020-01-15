@@ -38,6 +38,9 @@ list(APPEND BEANQUICK_TEST_COMMON_LIBRARIES
   ${CMAKE_THREAD_LIBS_INIT}
 )
 
+# include abseil path
+list(APPEND BEANQUICK_COMMON_INCLUDE_DIRS
+     ${CMAKE_CURRENT_SOURCE_DIR}/third_party/libfixed)
 add_subdirectory(third_party/libfixed)
 
 # include abseil path

@@ -12,22 +12,19 @@ namespace beanquick {
 #define D Decimal
 
 TEST(TestAmount, Ctor) {
-  Amount a(D("1.23"), "RMB");
-  Amount a1("1.23", "RMB");
-
-  // Create only with a str, no currency.
-  Amount a2("100,123.02");
-
-  Amount a3(a2);
+  Amount a1(D("1.23"), "RMB");
+  Amount a2(a2);
+  Amount a3(D("100,034.027456"), "USD");
 }
 
 TEST(TestAmount, FromString) {
-  Amount a1(D("100", "USD"));
+  Amount a1(D("100"), "USD");
   Amount a2 = Amount::FromString("100 USD");
   EXPECT_EQ(a1, a2);
 
   Amount a3(D("0.00000001"), "BTC");
-  Amoutn a4 = Amount::FromString("0.00000001 BTC") EXPECT_EQ(a3, a4);
+  Amount a4 = Amount::FromString("0.00000001 BTC");
+  EXPECT_EQ(a3, a4);
 
   Amount::FromString("   100.00 USD    ");
 
@@ -60,7 +57,7 @@ TEST(TestAmount, Comparisons) {
 }
 
 TEST(TestAmount, Hash) {
-  Amount a = Amout(D("100,034.027456"), "USD");
+  Amount a = Amount(D("100,034.027456"), "USD");
   std::map<Amount, int> mp;
   mp.insert({a, 1});
   std::unordered_set<Amount> st;
@@ -75,13 +72,21 @@ TEST(TestAmount, Hash) {
 
 TEST(TestAmount, Sort) {
   std::vector<Amount> amounts = {
-      Amount(D("1"), "USD"),   Amount(D("201"), "EUR"), Amount(D("3"), "USD"),
-      Amount(D("100"), "CAD"), Amount(D("2"), "USD"),   Amount(D("200"), "EUR"),
+      Amount(D("1"), "USD"),
+      Amount(D("201"), "EUR"),
+      Amount(D("3"), "USD"),
+      Amount(D("100"), "CAD"),
+      Amount(D("2"), "USD"),
+      Amount(D("200"), "EUR"),
   };
   sort(amounts.begin(), amounts.end());
   std::vector<Amount> right = {
-      Amount(D("100"), "CAD"), Amount(D("200"), "EUR"), Amount(D("201"), "EUR"),
-      Amount(D("1"), "USD"),   Amount(D("2"), "USD"),   Amount(D("3"), "USD"),
+      Amount(D("100"), "CAD"),
+      Amount(D("200"), "EUR"),
+      Amount(D("201"), "EUR"),
+      Amount(D("1"), "USD"),
+      Amount(D("2"), "USD"),
+      Amount(D("3"), "USD"),
   };
   EXPECT_EQ(right, amounts);
 }
@@ -108,25 +113,29 @@ TEST(TestAmount, Div) {
 }
 
 TEST(TestAmount, Add) {
-  EXPECT_EQ(Amount(D("117.02"), "RMB"), Amount(D("100"), "RMB")) +
-      Amount(D("17.02", "RMB"));
+  EXPECT_EQ(Amount(D("117.02"), "RMB"),
+            Amount(D("100"), "RMB") + Amount(D("17.02"), "RMB"));
 
   // Different currenies cant add
-  EXPECT_DEATH({ Amount(D("100"), "RMB") + Amount(D("17.02", "CAD")); }, "failed");
+  EXPECT_DEATH({
+    Amount(D("100"), "RMB") + Amount(D("17.02"), "CAD");
+  }, "failed");
 }
 
 TEST(TestAmount, Sub) {
-  EXPECT_EQ(Amount(D("82.98"), "RMB"), Amount(D("100"), "RMB")) -
-      Amount(D("17.02", "RMB"));
+  EXPECT_EQ(Amount(D("82.98"), "RMB"),
+            Amount(D("100"), "RMB") - Amount(D("17.02"), "RMB"));
 
   // Different currenies cant add
-  EXPECT_DEATH({ Amount(D("100"), "RMB") - Amount(D("17.02", "CAD")); }, "failed");
+  EXPECT_DEATH({
+    Amount(D("100"), "RMB") - Amount(D("17.02"), "CAD");
+  }, "failed");
 }
 
 TEST(TestAmount, Abs) {
-  EXPECT_EQ(Amount(D("82.98"), "RMB"), Amount::Abs(D("82.98"), "RMB"));
-  EXPECT_EQ(Amount(D("0"), "RMB"), Amount::Abs(D("0"), "RMB"));
-  EXPECT_EQ(Amount(D("82.98"), "RMB"), Amount::Abs(D("-82.98"), "RMB"));
+  EXPECT_EQ(Amount(D("82.98"), "RMB"), Amount::Abs(Amount(D("82.98"), "RMB")));
+  EXPECT_EQ(Amount(D("0"), "RMB"), Amount::Abs(Amount(D("0"), "RMB")));
+  EXPECT_EQ(Amount(D("82.98"), "RMB"), Amount::Abs(Amount(D("-82.98"), "RMB")));
 }
 
 #undef D

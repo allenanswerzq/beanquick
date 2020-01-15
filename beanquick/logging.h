@@ -43,14 +43,14 @@ namespace internal {
 
 class LogMessage : public std::basic_ostringstream<char> {
  public:
-  LogMessage(const char* fname, int line, int severity);
+  LogMessage(const char *fname, int line, int severity);
   ~LogMessage();
 
  protected:
   void GenerateLogMessage();
 
  private:
-  const char* fname_;
+  const char *fname_;
   int line;
   int severity_;
 };
@@ -59,7 +59,7 @@ class LogMessage : public std::basic_ostringstream<char> {
 // logging this message.
 class LogMessageFatal : public LogMessage {
  public:
-  LogMessageFatal(const char* file, int line) BEAN_ATTRIBUTE_COLD;
+  LogMessageFatal(const char *file, int line) BEAN_ATTRIBUTE_COLD;
   BEAN_ATTRIBUTE_NORETURN ~LogMessageFatal();
 };
 
@@ -93,7 +93,7 @@ class LogMessageFatal : public LogMessage {
 // integrals declared in classes and not defined to be used as arguments to
 // CHECK* macros. It's not encouraged though.
 template <typename T>
-inline const T& GetReferenceableValue(const T& t) {
+inline const T &GetReferenceableValue(const T &t) {
   return t;
 }
 inline char GetReferenceableValue(char t) { return t; }
@@ -113,38 +113,38 @@ inline unsigned long long GetReferenceableValue(unsigned long long t) {
 // This formats a value for a failing CHECK_XX statement.  Ordinarily,
 // it uses the definition for operator<<, with a few special cases below.
 template <typename T>
-inline void MakeCheckOpValueString(std::ostream* os, const T& v) {
+inline void MakeCheckOpValueString(std::ostream *os, const T &v) {
   (*os) << v;
 }
 
 // Overrides for char types provide readable values for unprintable
 // characters.
 template <>
-void MakeCheckOpValueString(std::ostream* os, const char& v);
+void MakeCheckOpValueString(std::ostream *os, const char &v);
 template <>
-void MakeCheckOpValueString(std::ostream* os, const signed char& v);
+void MakeCheckOpValueString(std::ostream *os, const signed char &v);
 template <>
-void MakeCheckOpValueString(std::ostream* os, const unsigned char& v);
+void MakeCheckOpValueString(std::ostream *os, const unsigned char &v);
 
 #if LANG_CXX11
 // We need an explicit specialization for std::nullptr_t.
 template <>
-void MakeCheckOpValueString(std::ostream* os, const std::nullptr_t& p);
+void MakeCheckOpValueString(std::ostream *os, const std::nullptr_t &p);
 #endif
 
 // A container for a string pointer which can be evaluated to a bool -
 // true iff the pointer is non-NULL.
 struct CheckOpString {
-  CheckOpString(string* str) : str_(str) {}
+  CheckOpString(string *str) : str_(str) {}
   // No destructor: if str_ is non-NULL, we're about to LOG(FATAL),
   // so there's no point in cleaning up str_.
   operator bool() const { return BEAN_PREDICT_FALSE(str_ != NULL); }
-  string* str_;
+  string *str_;
 };
 
 // Build the error message string. Specify no inlining for code size.
 template <typename T1, typename T2>
-string* MakeCheckOpString(const T1& v1, const T2& v2, const char* exprtext)
+string *MakeCheckOpString(const T1 &v1, const T2 &v2, const char *exprtext)
     __attribute__((noinline));
 
 // A helper class for formatting "expr (V1 vs. V2)" in a CHECK_XX
@@ -156,22 +156,22 @@ string* MakeCheckOpString(const T1& v1, const T2& v2, const char* exprtext)
 class CheckOpMessageBuilder {
  public:
   // Inserts "exprtext" and " (" to the stream.
-  explicit CheckOpMessageBuilder(const char* exprtext);
+  explicit CheckOpMessageBuilder(const char *exprtext);
   // Deletes "stream_".
   ~CheckOpMessageBuilder();
   // For inserting the first variable.
-  std::ostream* ForVar1() { return stream_; }
+  std::ostream *ForVar1() { return stream_; }
   // For inserting the second variable (adds an intermediate " vs. ").
-  std::ostream* ForVar2();
+  std::ostream *ForVar2();
   // Get the result (inserts the closing ")").
-  string* NewString();
+  string *NewString();
 
  private:
-  std::ostringstream* stream_;
+  std::ostringstream *stream_;
 };
 
 template <typename T1, typename T2>
-string* MakeCheckOpString(const T1& v1, const T2& v2, const char* exprtext) {
+string *MakeCheckOpString(const T1 &v1, const T2 &v2, const char *exprtext) {
   CheckOpMessageBuilder comb(exprtext);
   MakeCheckOpValueString(comb.ForVar1(), v1);
   MakeCheckOpValueString(comb.ForVar2(), v2);
@@ -186,26 +186,26 @@ string* MakeCheckOpString(const T1& v1, const T2& v2, const char* exprtext) {
 // comparison errors while still being thorough with the comparison.
 #define BEAN_DEFINE_CHECK_OP_IMPL(name, op)                              \
   template <typename T1, typename T2>                                    \
-  inline string* name##Impl(const T1& v1, const T2& v2,                  \
-                            const char* exprtext) {                      \
+  inline string *name##Impl(const T1 &v1, const T2 &v2,                  \
+                            const char *exprtext) {                      \
     if (BEAN_PREDICT_TRUE(v1 op v2))                                     \
       return NULL;                                                       \
     else                                                                 \
       return ::beanquick::internal::MakeCheckOpString(v1, v2, exprtext); \
   }                                                                      \
-  inline string* name##Impl(int v1, int v2, const char* exprtext) {      \
+  inline string *name##Impl(int v1, int v2, const char *exprtext) {      \
     return name##Impl<int, int>(v1, v2, exprtext);                       \
   }                                                                      \
-  inline string* name##Impl(const size_t v1, const int v2,               \
-                            const char* exprtext) {                      \
+  inline string *name##Impl(const size_t v1, const int v2,               \
+                            const char *exprtext) {                      \
     if (BEAN_PREDICT_FALSE(v2 < 0)) {                                    \
       return ::beanquick::internal::MakeCheckOpString(v1, v2, exprtext); \
     }                                                                    \
     const size_t uval = (size_t)((unsigned)v1);                          \
     return name##Impl<size_t, size_t>(uval, v2, exprtext);               \
   }                                                                      \
-  inline string* name##Impl(const int v1, const size_t v2,               \
-                            const char* exprtext) {                      \
+  inline string *name##Impl(const int v1, const size_t v2,               \
+                            const char *exprtext) {                      \
     if (BEAN_PREDICT_FALSE(v2 >= std::numeric_limits<int>::max())) {     \
       return ::beanquick::internal::MakeCheckOpString(v1, v2, exprtext); \
     }                                                                    \
@@ -291,7 +291,7 @@ BEAN_DEFINE_CHECK_OP_IMPL(Check_GT, >)
 #define QCHECK_GT(x, y) CHECK_GT(x, y)
 
 template <typename T>
-T&& CheckNotNull(const char* file, int line, const char* exprtext, T&& t) {
+T &&CheckNotNull(const char *file, int line, const char *exprtext, T &&t) {
   if (t == nullptr) {
     LogMessageFatal(file, line) << string(exprtext);
   }

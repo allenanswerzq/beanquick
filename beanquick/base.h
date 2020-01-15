@@ -5,8 +5,21 @@
 #include <iostream>
 #include <string>
 
-namespace beanquick {
+#include "debug.h"
+
 // #define NDEBUG
+
+#ifndef NDEBUG
+#define TRACER(...) \
+  ::debug::__trace(__LINE__, __func__, #__VA_ARGS__, __VA_ARGS__)
+#define DBGER(...) \
+  ::debug::__dbg(__LINE__, __func__, #__VA_ARGS__, (__VA_ARGS__))
+#else
+#define TRACER(...)
+#define DBGER(...)
+#endif
+
+namespace beanquick {
 
 using std::string;
 
@@ -46,6 +59,6 @@ typedef unsigned long long uint64;
 #define BEAN_SCANF_ATTRIBUTE(string_index, first_to_check)
 #endif
 
-} // namespace beanquick
+}  // namespace beanquick
 
 #endif  // BEANQUICK_BASE_H_

@@ -19,7 +19,7 @@ limitations under the License.
 namespace beanquick {
 namespace internal {
 
-LogMessage::LogMessage(const char* fname, int line, int severity)
+LogMessage::LogMessage(const char *fname, int line, int severity)
     : fname_(fname), line(line), severity_(severity) {}
 
 void LogMessage::GenerateLogMessage() {
@@ -31,7 +31,7 @@ void LogMessage::GenerateLogMessage() {
 
 LogMessage::~LogMessage() { GenerateLogMessage(); }
 
-LogMessageFatal::LogMessageFatal(const char* file, int line)
+LogMessageFatal::LogMessageFatal(const char *file, int line)
     : LogMessage(file, line, FATAL) {}
 LogMessageFatal::~LogMessageFatal() {
   // abort() ensures we don't return (we promised we would not via
@@ -41,7 +41,7 @@ LogMessageFatal::~LogMessageFatal() {
 }
 
 template <>
-void MakeCheckOpValueString(std::ostream* os, const char& v) {
+void MakeCheckOpValueString(std::ostream *os, const char &v) {
   if (v >= 32 && v <= 126) {
     (*os) << "'" << v << "'";
   } else {
@@ -50,7 +50,7 @@ void MakeCheckOpValueString(std::ostream* os, const char& v) {
 }
 
 template <>
-void MakeCheckOpValueString(std::ostream* os, const signed char& v) {
+void MakeCheckOpValueString(std::ostream *os, const signed char &v) {
   if (v >= 32 && v <= 126) {
     (*os) << "'" << v << "'";
   } else {
@@ -59,7 +59,7 @@ void MakeCheckOpValueString(std::ostream* os, const signed char& v) {
 }
 
 template <>
-void MakeCheckOpValueString(std::ostream* os, const unsigned char& v) {
+void MakeCheckOpValueString(std::ostream *os, const unsigned char &v) {
   if (v >= 32 && v <= 126) {
     (*os) << "'" << v << "'";
   } else {
@@ -69,24 +69,24 @@ void MakeCheckOpValueString(std::ostream* os, const unsigned char& v) {
 
 #if LANG_CXX11
 template <>
-void MakeCheckOpValueString(std::ostream* os, const std::nullptr_t& p) {
+void MakeCheckOpValueString(std::ostream *os, const std::nullptr_t &p) {
   (*os) << "nullptr";
 }
 #endif
 
-CheckOpMessageBuilder::CheckOpMessageBuilder(const char* exprtext)
+CheckOpMessageBuilder::CheckOpMessageBuilder(const char *exprtext)
     : stream_(new std::ostringstream) {
   *stream_ << "Check failed: " << exprtext << " (";
 }
 
 CheckOpMessageBuilder::~CheckOpMessageBuilder() { delete stream_; }
 
-std::ostream* CheckOpMessageBuilder::ForVar2() {
+std::ostream *CheckOpMessageBuilder::ForVar2() {
   *stream_ << " vs. ";
   return stream_;
 }
 
-string* CheckOpMessageBuilder::NewString() {
+string *CheckOpMessageBuilder::NewString() {
   *stream_ << ")";
   return new string(stream_->str());
 }

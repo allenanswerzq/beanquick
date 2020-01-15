@@ -1,26 +1,26 @@
-# Build proto file.
-INCLUDE(FindProtobuf)
-FIND_PACKAGE(Protobuf REQUIRED)
-INCLUDE_DIRECTORIES(${PROTOBUF_INCLUDE_DIR})
-PROTOBUF_GENERATE_CPP(PROTO_SRC PROTO_HEADER schema.proto)
+# # Build proto file.
+# INCLUDE(FindProtobuf)
+# FIND_PACKAGE(Protobuf REQUIRED)
+# INCLUDE_DIRECTORIES(${PROTOBUF_INCLUDE_DIR})
+# PROTOBUF_GENERATE_CPP(PROTO_SRC PROTO_HEADER schema.proto)
 
-# NOTE: must include this so that we can find the generated proto files.
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+# # NOTE: must include this so that we can find the generated proto files.
+# INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
-bean_cc_library(
-  NAME
-    schema
-  HDRS
-    ${PROTO_HDR}
-  SRCS
-    ${PROTO_SRC}
-  COPTS
-    ${BEANQUICK_DEFAULT_COPTS}
-  DEPS
-    # NOTE: must link this protobuf lib
-    ${PROTOBUF_LIBRARY}
-  PUBLIC
-)
+# bean_cc_library(
+#   NAME
+#     schema
+#   HDRS
+#     ${PROTO_HDR}
+#   SRCS
+#     ${PROTO_SRC}
+#   COPTS
+#     ${BEANQUICK_DEFAULT_COPTS}
+#   DEPS
+#     # NOTE: must link this protobuf lib
+#     ${PROTOBUF_LIBRARY}
+#   PUBLIC
+# )
 
 bean_cc_library(
   NAME
@@ -38,11 +38,14 @@ bean_cc_library(
   NAME
     core
   HDRS
+    "debug.h"
+    "base.h"
     "decimal.h"
     "amount.h"
   DEPS
     bean::util
     bean::fixed
+    absl::strings
   COPTS
     ${BEANQUICK_DEFAULT_COPTS}
   PUBLIC
