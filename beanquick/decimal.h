@@ -4,8 +4,8 @@
 #include <iostream>
 #include <string>
 
-#include "base.h"
 #include "absl/strings/str_replace.h"
+#include "base.h"
 #include "fixed/Number.h"
 
 namespace beanquick {

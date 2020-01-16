@@ -70,6 +70,7 @@ TEST(TestAmount, Hash) {
   EXPECT_EQ(st.size(), 2);
 }
 
+// clang-format off
 TEST(TestAmount, Sort) {
   std::vector<Amount> amounts = {
       Amount(D("1"), "USD"),
@@ -90,6 +91,7 @@ TEST(TestAmount, Sort) {
   };
   EXPECT_EQ(right, amounts);
 }
+// clang-format on
 
 TEST(TestAmount, Negative) {
   Amount a1 = Amount(D("100"), "RMB");
@@ -116,6 +118,9 @@ TEST(TestAmount, Add) {
   EXPECT_EQ(Amount(D("117.02"), "RMB"),
             Amount(D("100"), "RMB") + Amount(D("17.02"), "RMB"));
 
+  EXPECT_EQ(Amount(D("117.02"), "RMB"),
+            Amount(D("100"), "RMB") + D("17.02"));
+
   // Different currenies cant add
   EXPECT_DEATH({
     Amount(D("100"), "RMB") + Amount(D("17.02"), "CAD");
@@ -125,6 +130,9 @@ TEST(TestAmount, Add) {
 TEST(TestAmount, Sub) {
   EXPECT_EQ(Amount(D("82.98"), "RMB"),
             Amount(D("100"), "RMB") - Amount(D("17.02"), "RMB"));
+
+  EXPECT_EQ(Amount(D("82.98"), "RMB"),
+            Amount(D("100"), "RMB") - D("17.02"));
 
   // Different currenies cant add
   EXPECT_DEATH({

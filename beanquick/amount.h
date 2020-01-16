@@ -5,14 +5,14 @@
 #include <regex>
 #include <vector>
 
-#include "decimal.h"
-#include "logging.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_split.h"
+#include "decimal.h"
+#include "logging.h"
 
 namespace beanquick {
 
-inline static bool is_currency(const string &str) {
+inline static bool check_currency(const string &str) {
   std::regex CURRENCY_RE(R"([A-Z][A-Z0-9'._]{0,22}[A-Z0-9])");
   return std::regex_match(str, CURRENCY_RE);
 }
@@ -73,7 +73,7 @@ class Amount {
 };
 
 inline Amount::Amount(const Decimal &number, const string &currency) {
-  CHECK(is_currency(currency));
+  CHECK(check_currency(currency));
   number_ = number;
   currency_ = currency;
 }
@@ -126,7 +126,7 @@ inline Amount Amount::FromString(const string &str) {
   absl::RemoveExtraAsciiWhitespace(&tmp);
   ret = absl::StrSplit(tmp, " ");
   CHECK_EQ(ret.size(), 2);
-  CHECK(is_currency(ret[1]));
+  CHECK(check_currency(ret[1]));
   return Amount(Decimal(ret[0]), ret[1]);
 }
 
