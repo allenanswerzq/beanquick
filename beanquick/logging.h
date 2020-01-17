@@ -40,7 +40,6 @@ const int FATAL = 3;           // base_logging::FATAL;
 const int NUM_SEVERITIES = 4;  // base_logging::NUM_SEVERITIES;
 
 namespace internal {
-
 class LogMessage : public std::basic_ostringstream<char> {
  public:
   LogMessage(const char *fname, int line, int severity);

@@ -11,7 +11,6 @@
 #include "logging.h"
 
 namespace beanquick {
-
 inline static bool check_currency(const string &str) {
   std::regex CURRENCY_RE(R"([A-Z][A-Z0-9'._]{0,22}[A-Z0-9])");
   return std::regex_match(str, CURRENCY_RE);
@@ -145,7 +144,8 @@ inline std::ostream &operator<<(std::ostream &os, const Amount &amount) {
 inline bool operator<(const Amount &lhs, const Amount &rhs) {
   if (lhs.currency_ != rhs.currency_) {
     return lhs.Currency() < rhs.Currency();
-  } else {
+  }
+  else {
     return lhs.Number() < rhs.Number();
   }
 }
@@ -194,7 +194,6 @@ const Amount operator-(const Amount &lhs, const Amount &rhs) {
 }  // namespace beanquick
 
 namespace std {
-
 // Hash combiner used by TensorFlow core.
 // See tensorflow/lite/util.cc:
 size_t CombineHashes(std::initializer_list<size_t> hashes) {

@@ -13,7 +13,6 @@
 
 // Some really dirty stuff, dont read. used just for quick debugging something.
 namespace debug {
-
 using namespace std;
 
 template <class T>
@@ -145,7 +144,8 @@ struct debug {
           }
         }
       }
-    } else {
+    }
+    else {
       for (int i = 0; i < n; i++) {
         if (i > 0) {
           debug() << '\n';
@@ -178,7 +178,8 @@ struct debug {
   typename enable_if<sizeof(dud<T>(0)) != 1, debug &>::type operator<<(T i) {
     if (is_floating_point<T>::value) {
       cerr << setprecision(20) << fixed << i << flush;
-    } else {
+    }
+    else {
       cerr << i << flush;
     }
     return *this;
@@ -218,7 +219,8 @@ void __print(const string &names, T arg) {
   }
   if (is_same<T, const char *>::value) {
     debug() << arg << "\n";
-  } else {
+  }
+  else {
     debug() << name << ": " << arg << "\n";
   }
 }
@@ -235,7 +237,8 @@ void __print(const string &names, T arg, Args... args) {
     p = names.find(')');
     assert(0 <= p && p < n);
     p = names.find(',', p + 1);
-  } else {
+  }
+  else {
     // Now looking for comma sign to split varibles.
     p = names.find(',');
   }
@@ -256,7 +259,8 @@ void __print(const string &names, T arg, Args... args) {
     // eg. trace("TEST", var1, var2);
     int w = name.size();
     debug() << name.substr(1, w - 2) << ": | ";
-  } else {
+  }
+  else {
     debug() << name << ": " << arg << " | ";
   }
   while (p + 1 < n && names[p + 1] == ' ') {

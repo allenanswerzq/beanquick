@@ -3,7 +3,6 @@
 #include "gtest/gtest.h"
 
 namespace beanquick {
-
 #define D Decimal
 
 TEST(TestDecimal, Ctor) {
@@ -23,6 +22,23 @@ TEST(TestDecimal, Ctor) {
   std::ostringstream oss;
   oss << d.toString();
   EXPECT_EQ(oss.str(), "1.23");
+}
+
+TEST(TestDecimal, CountNumber) {
+  Decimal d("1.23");
+  EXPECT_FALSE(d.HasSign());
+  EXPECT_EQ(d.Integer(), 1);
+  EXPECT_EQ(d.Fractionals(), 2);
+
+  Decimal d("+1.234567");
+  EXPECT_TRUE(d.HasSign());
+  EXPECT_EQ(d.Integer(), 1);
+  EXPECT_EQ(d.Fractionals(), 6);
+
+  Decimal d("-1.234567");
+  EXPECT_TRUE(d.HasSign());
+  EXPECT_EQ(d.Integer(), 1);
+  EXPECT_EQ(d.Fractionals(), 6);
 }
 
 TEST(TestDecimal, Operation) {

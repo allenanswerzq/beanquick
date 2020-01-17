@@ -8,7 +8,6 @@
 #include "gtest/gtest.h"
 
 namespace beanquick {
-
 #define D Decimal
 
 TEST(TestAmount, Ctor) {
@@ -118,26 +117,22 @@ TEST(TestAmount, Add) {
   EXPECT_EQ(Amount(D("117.02"), "RMB"),
             Amount(D("100"), "RMB") + Amount(D("17.02"), "RMB"));
 
-  EXPECT_EQ(Amount(D("117.02"), "RMB"),
-            Amount(D("100"), "RMB") + D("17.02"));
+  EXPECT_EQ(Amount(D("117.02"), "RMB"), Amount(D("100"), "RMB") + D("17.02"));
 
   // Different currenies cant add
-  EXPECT_DEATH({
-    Amount(D("100"), "RMB") + Amount(D("17.02"), "CAD");
-  }, "failed");
+  EXPECT_DEATH({ Amount(D("100"), "RMB") + Amount(D("17.02"), "CAD"); },
+               "failed");
 }
 
 TEST(TestAmount, Sub) {
   EXPECT_EQ(Amount(D("82.98"), "RMB"),
             Amount(D("100"), "RMB") - Amount(D("17.02"), "RMB"));
 
-  EXPECT_EQ(Amount(D("82.98"), "RMB"),
-            Amount(D("100"), "RMB") - D("17.02"));
+  EXPECT_EQ(Amount(D("82.98"), "RMB"), Amount(D("100"), "RMB") - D("17.02"));
 
   // Different currenies cant add
-  EXPECT_DEATH({
-    Amount(D("100"), "RMB") - Amount(D("17.02"), "CAD");
-  }, "failed");
+  EXPECT_DEATH({ Amount(D("100"), "RMB") - Amount(D("17.02"), "CAD"); },
+               "failed");
 }
 
 TEST(TestAmount, Abs) {

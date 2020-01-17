@@ -20,7 +20,6 @@
 #endif
 
 namespace beanquick {
-
 using std::string;
 
 typedef signed char int8;

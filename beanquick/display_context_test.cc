@@ -5,14 +5,37 @@
 #include "gtest/gtest.h"
 
 namespace beanquick {
-
 #define D Decimal
 #define A Amount
 
-std::vector<A> amountlize(std::vector<string> number) {
+// -----------------------------------------------------------------------------
+// DistributionTest
+// -----------------------------------------------------------------------------
+Test(TestInt, DistributionTest) {
+  Distribution<int> dist;
+  EXPECT_TRUE(dist.Empty());
+  dist.Update(1);
+  dist.Update(1);
+  dist.Update(2);
+  dist.Update(2);
+  dist.Update(2);
+  dist.Update(3);
+  dist.Update(3);
+  dist.Update(4);
+  EXPECT_EQ(2, dist.Mode());
+  EXPECT_EQ(1, dist.Min());
+  EXPECT_EQ(4, dist.Max());
+  EXPECT_EQ(true, dist.empty());
+}
+
+// -----------------------------------------------------------------------------
+// DisplayContextTest
+// -----------------------------------------------------------------------------
+typedef absl::variant<Amount, string> Variant;
+
+std::vector<A> decimalize(std::vector<Variant>& number) {
   std::vector<A> ret;
   for (auto v : number) {
-    ret.push_back(A(v));
   }
   return ret;
 }
@@ -26,11 +49,11 @@ class DisplayContextTest : public ::testing::Test {
     int reserved = 0;
   };
 
-  void AssertFormatNumbers(std::vector<string> number_strings&,
-                           std::vector<string>& expected_fmt_number,
+  void AssertFormatNumbers(const std::vector<Variant>& number_strings,
+                           const std::vector<string>& expected_fmt_number,
                            BuildArg& build_args = build_args_) {
     DisplayContext dcontext;
-    numbers = amountlize(number_strings);
+    numbers = decimalize(number_strings);
     if (!build_args.noinit) {
       for (auto number : numbers) {
       }
@@ -57,26 +80,26 @@ TEST_P(TestNaturalNoClearMode, DisplayContextTest) {
 
 TEST_P(TestNaturalClearMode, DisplayContextTest) {
   AssertFormatNumbers({"1.2345", "1.23", "234.26", "38.019"},
-                           {"1.23", "1.23", "234.26", "38.02"});
+                      {"1.23", "1.23", "234.26", "38.02"});
 }
 
 
 TEST_P(TestNaturalMaximum, DisplayContextTest) {
   build_args_.precision = DisplayPrecision::MAXIMUM;
   AssertFormatNumbers({"1.2345", "1.23", "234.26", "38.019"},
-                           {"1.2345", "1.2300", "234.2600", "38.0190"});
+                      {"1.2345", "1.2300", "234.2600", "38.0190"});
 }
 
 TEST_P(TestNaturalCommas, DisplayContextTest) {
   build_args_.commas = true;
   AssertFormatNumbers({"1.2345", "1.23", "234.26", "38.019"},
-                           {"1.2345", "1.2300", "234.2600", "38.0190"});
+                      {"1.2345", "1.2300", "234.2600", "38.0190"});
 }
 
 TEST_P(TestNaturalReserved, DisplayContextTest) {
   build_args_.reserved = 10;
   AssertFormatNumbers({"1.2345", "1.23", "234.26", "38.019"},
-                           {"1.23", "1.23", "234.26", "38.02"});
+                      {"1.23", "1.23", "234.26", "38.02"});
 }
 
 class DisplayContextAlignRightTest : public  DisplayContextTest {
@@ -181,11 +204,11 @@ TEST_P(TestDotBasic, DisplayContextAlignDotTest) {
 
 TEST_P(TestDotBasicMulti, DisplayContextAlignDotTest) {
   AssertFormatNumbers(
-      {{"1.2345", "USD"},
-       {"764", "CAD"},
-       {"-7409.01", "EUR"},
-       {"0.00", "XAU"},
-       {"0.00000125", "RBFF"}},
+      {A("1.2345", "USD"),
+       A("764", "CAD"),
+       A("-7409.01", "EUR"),
+       A("0.00", "XAU"),
+       A("0.00000125", "RBFF")},
       {"    1.2345    ",
        "  764         ",
        "-7409.01      ",
@@ -195,12 +218,12 @@ TEST_P(TestDotBasicMulti, DisplayContextAlignDotTest) {
 
 TEST_P(TestDotSign, DisplayContextAlignDotTest) {
   AssertFormatNumbers(
-      {{"7409.01", "USD"}, "0.1"},
+      {A("7409.01", "USD"), "0.1"},
       {"7409.01",
        "   0.1 "});
 
   AssertFormatNumbers(
-      {("-7409.01", "USD"), "0.1"},
+      {A("-7409.01", "USD"), "0.1"},
       {"-7409.01",
        "    0.1 "});
 };
@@ -216,7 +239,7 @@ TEST_P(TestDotInteger, DisplayContextAlignDotTest) {
 
   this->build_args_.precision = DisplayPrecision::MAXIMUM;
   AssertFormatNumbers(
-      {"1", "20", "300", "4000", "50000", "0.001", {"0.1", "USD"}},
+      {"1", "20", "300", "4000", "50000", "0.001", A("0.1", "USD")},
       {"    1.000",
        "   20.000",
        "  300.000",
@@ -239,7 +262,7 @@ TEST_P(TestDotIntegerCommas, DisplayContextAlignDotTest) {
 
 TEST_P(TestDotFractional, DisplayContextAlignDotTest) {
     AssertFormatNumbers(
-        {{"4000", "USD"}, "0.01", "0.02", "0.0002"},
+        {A("4000", "USD"), "0.01", "0.02", "0.0002"},
         {"4000   ",
          "   0.01",
          "   0.02",
@@ -249,7 +272,7 @@ TEST_P(TestDotFractional, DisplayContextAlignDotTest) {
 TEST_P(TestDotFractionalCommas, DisplayContextAlignDotTest) {
   this->build_args_.commas = true;
   AssertFormatNumbers(
-      {{"4000", "USD"}, "0.01", "0.02", "0.0002"},
+      {A("4000", "USD"), "0.01", "0.02", "0.0002"},
       {"4,000   ",
        "    0.01",
        "    0.02",
