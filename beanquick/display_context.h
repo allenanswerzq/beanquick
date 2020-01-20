@@ -1,11 +1,15 @@
 #ifndef DEANQUICK_DISPLAY_CONTEXT_H_
 #define DEANQUICK_DISPLAY_CONTEXT_H_
 
-#include "decimal.h"
+#include "absl/strings/str_cat.h"
+#include "amount.h"
 #include "logging.h"
 
 namespace beanquick {
 
+// -----------------------------------------------------------------------------
+// Distribution Definition.
+// -----------------------------------------------------------------------------
 template <class T>
 class Distribution {
  public:
@@ -14,25 +18,26 @@ class Distribution {
   bool Empty() { return hist_.empty(); }
 
   void Update(T value) {
-    hist_[value]++;
     if (Empty()) {
       min_ = max_ = value;
       mode_.first = 0;
     }
     else {
-      min_ = min(value, min_);
-      max_ = max(value, max_);
+      min_ = std::min(value, min_);
+      max_ = std::max(value, max_);
     }
-    if (hist_[value] >= mode_.first) {
+    hist_[value]++;
+    int count = hist_[value];
+    if (count >= mode_.first) {
       mode_.first = hist_[value];
       mode_.second = value;
     }
   }
 
-  // Returns the min value in this distribution.
+  // Returns the std::min value in this distribution.
   T Min() { return min_; };
 
-  // Returns the max value in this distribution
+  // Returns the std::max value in this distribution
   T Max() { return max_; }
 
   // Returns the the most counted value.
@@ -41,10 +46,15 @@ class Distribution {
  private:
   T min_;
   T max_;
-  std::unordere_map<T, int> hist_;
+  std::unordered_map<T, int> hist_;
   std::pair<int, T> mode_;
 };
 
+//
+// -----------------------------------------------------------------------------
+// CurrencyContext Definition.
+//
+// -----------------------------------------------------------------------------
 enum class DisplayPrecision {
   MOST_COMMON,
   MAXIMUM,
@@ -64,31 +74,55 @@ class CurrencyContext {
 
   void Update(const Decimal& decimal) {
     has_sign_ = decimal.HasSign();
-    fractional_dist_.Update(decimal.Fractionals());
-    integer_max_ = max(decimal.Integer(), integer_max_);
+    frac_dist_.Update(decimal.Fractional());
+    integer_max_ = std::max(decimal.Integer(), integer_max_);
   }
 
-  int Fractionals(DisplayPrecision precision) {
-    if (fractional_dist_.Empty()) {
+  bool HasSign() { return has_sign_; }
+
+  int Integer() { return integer_max_; }
+
+  int Fractional(DisplayPrecision precision) {
+    if (frac_dist_.Empty()) {
       return 0;
     }
     if (precision == DisplayPrecision::MOST_COMMON) {
-      return fractional_dist_.Mode();
+      return frac_dist_.Mode();
     }
     else if (precision == DisplayPrecision::MAXIMUM) {
-      return fractional_dist_.Max();
+      return frac_dist_.Max();
     }
     else {
-      CHECK(false) << "Unknown precision: " << precision;
+      CHECK(false) << "Unknown precision: ";
+      return 0;
     }
   }
 
-  // string ToString() {
-  //   string fmt = R("sign=%d  integer_max=%d
-  //          fractional_common=%d  fractional_max=%d
-  //          %d %d");
-  //   string example;
-  // }
+  void DebugPrint() {
+    string fmt = "sign=%d integer_max=%d frac_common=%d frac_max=%d %s %s";
+    string example;
+    if (has_sign_) {
+      absl::StrAppend(&example, "-");
+    }
+    absl::StrAppend(&example, string(integer_max_, '0'));
+
+    string example_common = example;
+    int frac_common = Fractional(DisplayPrecision::MOST_COMMON);
+    if (frac_common > 0) {
+      absl::StrAppend(&example_common, ".");
+      absl::StrAppend(&example_common, string(frac_common, '0'));
+    }
+
+    string example_max = example;
+    int frac_max = Fractional(DisplayPrecision::MAXIMUM);
+    if (frac_max > 0) {
+      absl::StrAppend(&example_max, ".");
+      absl::StrAppend(&example_max, string(frac_max, '0'));
+    }
+
+    printf(fmt.c_str(), has_sign_, integer_max_, frac_dist_.Mode(),
+           frac_dist_.Max(), example_common.c_str(), example_max.c_str());
+  }
 
  private:
   // Ture if at least one of the numbers has a negative or explicit plus sign
@@ -99,9 +133,14 @@ class CurrencyContext {
   int integer_max_ = 1;
 
   // A frequency distribution of fractionals seen for this currency.
-  Distribution<int> fractional_dist_;
+  Distribution<int> frac_dist_;
 };
 
+//
+// -----------------------------------------------------------------------------
+// DisplayContext Definition.
+//
+// -----------------------------------------------------------------------------
 //
 // DisplayContext dcontext;
 // DisplayConfig config;
@@ -110,59 +149,107 @@ class CurrencyContext {
 // dcontext.Build(config);
 //
 typedef struct {
+  bool noinit = true;
   int reserved = 0;
-  bool commas = false;
-  DisplayAlignment alignment = NATURAL;
-  DisplayPrecision precision = MOST_COMMON;
+  int comma_position = 3;
+  DisplayAlignment alignment = DisplayAlignment::NATURAL;
+  DisplayPrecision precision = DisplayPrecision::MOST_COMMON;
 } DisplayConfig;
 
-// Define default display config.
-static DisplayConfig DEFAULT_DISPLAY_CONFIG;
+template <class T>
+class DisplayFormatter;
 
+template <class T>
 class DisplayContext {
  public:
-  DisplayContext() = default;
+  typedef std::unordered_map<string, string> UMSS;
 
-  bool SetCommas(bool commas) { commas_ = commas; }
+  DisplayContext() {
+    ccontexts_[kDefulatCurrency] = CurrencyContext();
+  }
 
-  void Build(const DisplayConfig& display_config);
+  const int kDefaultUninitPrecision = 8;
+
+  const int kDefulatNoComma = 0;
+
+  static const string kDefulatCurrency;
+
+  static const DisplayConfig kDefaultConfig;
+
+  void SetCommaPosition(int comma_position) {
+    comma_position_ = comma_position;
+  }
+
+  void Update(const Decimal& decimal) {
+    ccontexts_[kDefulatCurrency].Update(decimal);
+  }
+
+  void Update(const Amount& amout) {
+    ccontexts_[amout.Currency()].Update(amout.Number());
+  }
+
+  // string Quantize(string number, );
+
+  DisplayFormatter<T> Build(const DisplayConfig& display_config);
 
  private:
-  string build_dot(const DisplayConfig& display_config);
+  UMSS build_dot(const DisplayConfig& display_config);
 
-  string build_right(const DisplayConfig& display_config);
+  UMSS build_right(const DisplayConfig& display_config);
 
-  string build_natural(const DisplayConfig& display_config);
+  UMSS build_natural(const DisplayConfig& display_config);
 
-  bool commas_ = false;
+  int comma_position_ = kDefulatNoComma;
 
-  std::unordere_map<string, CurrencyContext> ccontexts_;
+  std::unordered_map<string, CurrencyContext> ccontexts_;
 
-  std::function<string(const DisplayConfig&)> build_method_;
+  std::function<UMSS(const DisplayConfig&)> build_method_;
+
 };
 
-inline void DisplayContext::Build(
-    const DisplayConfig& display_config = DEFAULT_DISPLAY_CONFIG) {
-  if (!display_config.commas) {
-    display_config.commas = commas_;
-  }
-  if (display_config.alignment == DisplayAlignment::NATURAL) {
-    build_method_ = build_natural;
-  }
-  else if (display_config.alignment == DisplayAlignment::RIGHT) {
-    build_method_ = build_right;
-  }
-  else if (display_config.alignment == DisplayAlignment::DOT) {
-    build_method_ = build_dot;
+//
+// -----------------------------------------------------------------------------
+// DisplayFormatter Definition.
+//
+// -----------------------------------------------------------------------------
+template <class T>
+class DisplayFormatter : {
+ public:
+  explicit DisplayFormatter(
+      const DisplayContext* display_context,
+      const DisplayConfig* display_config,
+      const std::unordered_map<string, string>* fmtstrings) {
+    display_context_ = display_context;
+    display_config_ = display_config;
+    fmtstrings_ = fmtstrings;
+  };
+
+  void Format(const T& number, currency = DisplayContext::kDefulatCurrency);
+
+ private:
+  const DisplayContext* display_context_;                 // Not owned
+  const DisplayConfig* display_config_;                   // Not owned
+  const std::unordered_map<string, string>* fmtstrings_;  // Not owned
+};
+
+template <>
+class DisplayFormatter<Decimal>;
+
+inline void DisplayFormatter<Decimal>::Format(const Decimal& number,
+                                                 currency = "__default__") {
+  if (display_config_.comma_position == 0) {
+    CHECK(fmtstrings_.count(currency)) << "Not find currency: " << currency;
+    printf(fmtstrings_[currency].c_str(), stod(number.ToString()));
   }
   else {
-    CHECK(false) << "Unknown alignment: " << display_config.alignment;
+    // Print with comma_position
   }
-  string fmtsting = build_method_(display_config);
-  return DisplayFormatter(this, display_config, fmtsting);
 }
 
-class DisplayFormatter : {};
+// Define default display config.
+const DisplayConfig DisplayContext::kDefaultConfig = DisplayConfig();
+
+const string DisplayContext::kDefulatCurrency = "__default__";
 
 }  // namespace beanquick
 

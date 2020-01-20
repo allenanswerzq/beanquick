@@ -42,6 +42,9 @@ bean_cc_library(
     "base.h"
     "decimal.h"
     "amount.h"
+    "display_context.h"
+  SRCS
+    "display_context.cc"
   DEPS
     bean::util
     bean::fixed
@@ -75,4 +78,15 @@ bean_cc_test(
     gmock_main
 )
 
+bean_cc_test(
+  NAME
+    display_context_test
+  SRCS
+    "display_context_test.cc"
+  COPTS
+    ${BEANQUICK_TEST_COPTS}
+  DEPS
+    bean::core
+    gmock_main
+)
 

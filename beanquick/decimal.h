@@ -1,6 +1,7 @@
 #ifndef BEANQUICK_DECIMAL_H_
 #define BEANQUICK_DECIMAL_H_
 
+#include <cassert>
 #include <iostream>
 #include <string>
 
@@ -15,33 +16,46 @@ class Decimal : public ::fixed::Number {
 
   Decimal() : Base() {}
 
-  Decimal(const string &str) : Base(helper(str)) {}
+  // TODO(zq7): add string validation and checks.
+  Decimal(const string &str) : Base(helper(str)) {
+    string tmp = helper(str);
+    if (tmp[0] == '+' || tmp[0] == '-') {
+      has_sign_ = true;
+    }
+    else {
+      has_sign_ = false;
+    }
 
-  // TODO(zq7): add string validation.
-  string helper(const string &str) {
-    string tmp = str;
-    // Remove commas sign from input, for case like "100,013.034".
-    absl::StrReplaceAll(tmp, {{",", ""}});
-    has_sign_ = (tmp[0] == '+' || tmp[0] == '-');
     std::size_t pos = tmp.find('.');
-    if (pos != std::npos) {
-      integer_count_ = pos - (has_sign_ ? 1 : 0);
-      fractional_count_ = tmp.size() - pos - (has_sign_ ? 1 : 0);
+    int one = (has_sign_ ? 1 : 0);
+    if (pos != std::string::npos) {
+      integer_count_ = pos - one;
+      frac_count_ = tmp.size() - (pos + 1);
+    }
+    else {
+      integer_count_ = tmp.size() - one;
+      frac_count_ = 0;
     }
   }
 
-  bool HasSign() { return has_sign_; }
+  string helper(const string &str) {
+    string tmp = str;
+    tmp = absl::StrReplaceAll(tmp, {{",", ""}});
+    return tmp;
+  }
 
-  int Fractionals() { return fractional_count; }
+  bool HasSign() const { return has_sign_; }
 
-  int Integer() { return integer_count_; }
+  int Fractional() const { return frac_count_; }
+
+  int Integer() const { return integer_count_; }
 
   friend Decimal operator-(const Decimal &from);
 
  private:
-  bool has_sign_ = false;
-  int integer_count_ = 0;
-  int fractional_count = 0;
+  bool has_sign_;
+  int integer_count_;
+  int frac_count_;
 };
 
 inline Decimal operator-(const Decimal &from) {

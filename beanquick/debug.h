@@ -177,10 +177,10 @@ struct debug {
   template <class T>
   typename enable_if<sizeof(dud<T>(0)) != 1, debug &>::type operator<<(T i) {
     if (is_floating_point<T>::value) {
-      cerr << setprecision(20) << fixed << i << flush;
+      cout << setprecision(20) << fixed << i << flush;
     }
     else {
-      cerr << i << flush;
+      cout << i << flush;
     }
     return *this;
   }

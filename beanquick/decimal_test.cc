@@ -7,7 +7,7 @@ namespace beanquick {
 
 TEST(TestDecimal, Ctor) {
   // Construct with a String.
-  Decimal d("1.23");
+  Decimal d("1.238");
 
   // Construct with a Decimal obj.
   Decimal d1(d);
@@ -21,24 +21,24 @@ TEST(TestDecimal, Ctor) {
 
   std::ostringstream oss;
   oss << d.toString();
-  EXPECT_EQ(oss.str(), "1.23");
+  EXPECT_EQ(oss.str(), "1.238");
 }
 
-TEST(TestDecimal, CountNumber) {
-  Decimal d("1.23");
+TEST(TestDecimal, CountDecimalNumber) {
+  Decimal d("111.222");
   EXPECT_FALSE(d.HasSign());
-  EXPECT_EQ(d.Integer(), 1);
-  EXPECT_EQ(d.Fractionals(), 2);
+  EXPECT_EQ(d.Integer(), 3);
+  EXPECT_EQ(d.Fractional(), 3);
 
-  Decimal d("+1.234567");
-  EXPECT_TRUE(d.HasSign());
-  EXPECT_EQ(d.Integer(), 1);
-  EXPECT_EQ(d.Fractionals(), 6);
+  Decimal d1("+1231.234567");
+  EXPECT_TRUE(d1.HasSign());
+  EXPECT_EQ(d1.Integer(), 4);
+  EXPECT_EQ(d1.Fractional(), 6);
 
-  Decimal d("-1.234567");
-  EXPECT_TRUE(d.HasSign());
-  EXPECT_EQ(d.Integer(), 1);
-  EXPECT_EQ(d.Fractionals(), 6);
+  Decimal d2("-1.234567");
+  EXPECT_TRUE(d2.HasSign());
+  EXPECT_EQ(d2.Integer(), 1);
+  EXPECT_EQ(d2.Fractional(), 6);
 }
 
 TEST(TestDecimal, Operation) {
