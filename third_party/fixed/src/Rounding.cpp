@@ -23,7 +23,7 @@
 // IN THE SOFTWARE.
 //
 
-#include "fixed/Rounding.h"
+#include "Rounding.h"
 
 #include <cassert>
 

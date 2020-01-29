@@ -23,8 +23,8 @@
 // IN THE SOFTWARE.
 //
 
-#include "fixed/FirstBitSet.h"
-#include "fixed/Number.h"
+#include "FirstBitSet.h"
+#include "Number.h"
 #include "Utils.h"
 
 #include <algorithm>

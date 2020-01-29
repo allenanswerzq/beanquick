@@ -26,7 +26,7 @@
 #ifndef FIXED_FIRST_BIT_SET_H
 #define FIXED_FIRST_BIT_SET_H
 
-#include "fixed/Absolute.h"
+#include "Absolute.h"
 
 #include <cstdint>
 #include <type_traits>

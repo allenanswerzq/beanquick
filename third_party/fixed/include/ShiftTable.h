@@ -33,8 +33,8 @@
 #include <limits>
 #include <vector>
 
-#include "fixed/Absolute.h"
-#include "fixed/FirstBitSet.h"
+#include "Absolute.h"
+#include "FirstBitSet.h"
 
 namespace fixed {
 

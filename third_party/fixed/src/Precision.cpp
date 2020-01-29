@@ -23,7 +23,7 @@
 // IN THE SOFTWARE.
 //
 
-#include "fixed/Precision.h"
+#include "Precision.h"
 
 #include <algorithm>
 #include <cassert>

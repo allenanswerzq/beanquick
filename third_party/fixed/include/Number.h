@@ -26,12 +26,12 @@
 #ifndef FIXED_NUMBER_H
 #define FIXED_NUMBER_H
 
-#include "fixed/Absolute.h"
-#include "fixed/Exceptions.h"
-#include "fixed/FirstBitSet.h"
-#include "fixed/Precision.h"
-#include "fixed/Rounding.h"
-#include "fixed/ShiftTable.h"
+#include "Absolute.h"
+#include "Exceptions.h"
+#include "FirstBitSet.h"
+#include "Precision.h"
+#include "Rounding.h"
+#include "ShiftTable.h"
 
 #include <cstdint>
 #include <cmath>

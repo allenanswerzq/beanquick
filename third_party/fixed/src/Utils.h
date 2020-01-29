@@ -26,7 +26,7 @@
 #ifndef FIXED_UTILS_H
 #define FIXED_UTILS_H
 
-#include "fixed/Absolute.h"
+#include "Absolute.h"
 
 #include <algorithm>
 

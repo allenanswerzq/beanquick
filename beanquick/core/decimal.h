@@ -6,8 +6,9 @@
 #include <string>
 
 #include "absl/strings/str_replace.h"
-#include "base.h"
-#include "fixed/Number.h"
+#include "beanquick/core/base.h"
+
+#include "third_party/fixed/include/Number.h"
 
 namespace beanquick {
 class Decimal : public ::fixed::Number {
