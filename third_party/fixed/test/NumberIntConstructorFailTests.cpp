@@ -23,7 +23,7 @@
 // IN THE SOFTWARE.
 //
 
-#include "fixed/Number.h"
+#include "Number.h"
 #include "TestsCommon.h"
 
 #include <iostream>

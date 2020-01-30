@@ -32,7 +32,6 @@
 namespace fixed {
 
 const std::vector<std::string> Precision::policyStrings_ = {
-  {
     "MIN_OPERAND",
     "MIN_OPERAND_PLUS_1",
     "MIN_OPERAND_PLUS_2",
@@ -46,7 +45,6 @@ const std::vector<std::string> Precision::policyStrings_ = {
     "MAX_OPERAND_PLUS_4",
     "MAX_OPERAND_PLUS_5",
     "MAX_PRECISION"
-  }
 };
 
 const Precision::RunTimePolicyStringsCheck

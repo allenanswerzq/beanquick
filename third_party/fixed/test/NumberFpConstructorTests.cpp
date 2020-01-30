@@ -23,7 +23,7 @@
 // IN THE SOFTWARE.
 //
 
-#include "fixed/Number.h"
+#include "Number.h"
 #include "TestsCommon.h"
 
 #include <iostream>
@@ -33,7 +33,7 @@
 
 namespace fixed {
 namespace test {
- 
+
 //
 // There are separate tests for rounding, all results for the arithmetic tests
 // here will be using this rounding mode.

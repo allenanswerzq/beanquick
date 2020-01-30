@@ -26,7 +26,7 @@
 #ifndef FIXED_TESTS_COMMON_H
 #define FIXED_TESTS_COMMON_H
 
-#include "fixed/Number.h"
+#include "Number.h"
 
 #include <functional>
 #include <iostream>

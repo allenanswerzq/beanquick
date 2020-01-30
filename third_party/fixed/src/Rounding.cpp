@@ -30,7 +30,6 @@
 namespace fixed {
 
 const std::vector<std::string> Rounding::modeStrings_ = {
-  {
     "DOWN",
     "UP",
     "TOWARDS_ZERO",
@@ -41,7 +40,6 @@ const std::vector<std::string> Rounding::modeStrings_ = {
     "TO_NEAREST_HALF_TOWARDS_ZERO",
     "TO_NEAREST_HALF_TO_EVEN",
     "TO_NEAREST_HALF_TO_ODD"
-  }
 };
 
 const Rounding::RunTimeModeStringsCheck Rounding::runTimeModeStringsCheck_;

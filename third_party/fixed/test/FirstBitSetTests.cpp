@@ -23,7 +23,7 @@
 // IN THE SOFTWARE.
 //
 
-#include "fixed/FirstBitSet.h"
+#include "FirstBitSet.h"
 #include "TestsCommon.h"
 
 #include <functional>
