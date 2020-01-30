@@ -25,9 +25,12 @@ cc_library(
     deps = [
         ":util",
         "//third_party:libfixed",
+        "@com_google_absl//absl/memory",
         "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/types:variant",
+        "@com_google_absl//absl/functional:bind_front",
+        "@com_google_googletest//:gtest_main",
     ],
-    # copts = ["-Ithird_party/fixed/include"],
 )
 
 cc_test(

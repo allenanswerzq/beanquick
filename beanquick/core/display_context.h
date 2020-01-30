@@ -1,9 +1,11 @@
 #ifndef DEANQUICK_DISPLAY_CONTEXT_H_
 #define DEANQUICK_DISPLAY_CONTEXT_H_
 
+#include "absl/memory/memory.h"
 #include "absl/strings/str_cat.h"
-#include "amount.h"
-#include "logging.h"
+#include "beanquick/core/amount.h"
+#include "beanquick/core/logging.h"
+#include "gmock/gmock.h"
 
 namespace beanquick {
 
@@ -156,17 +158,15 @@ typedef struct {
   DisplayPrecision precision = DisplayPrecision::MOST_COMMON;
 } DisplayConfig;
 
-template <class T>
 class DisplayFormatter;
 
-template <class T>
+typedef std::unordered_map<string, string> UMAPSS;
+
+typedef std::unique_ptr<UMAPSS> UMAPSS_PTR;
+
 class DisplayContext {
  public:
-  typedef std::unordered_map<string, string> UMSS;
-
-  DisplayContext() {
-    ccontexts_[kDefulatCurrency] = CurrencyContext();
-  }
+  DisplayContext() { ccontexts_[kDefulatCurrency] = CurrencyContext(); }
 
   const int kDefaultUninitPrecision = 8;
 
@@ -190,66 +190,55 @@ class DisplayContext {
 
   // string Quantize(string number, );
 
-  DisplayFormatter<T> Build(const DisplayConfig& display_config);
+  DisplayFormatter Build(DisplayConfig config = kDefaultConfig);
 
  private:
-  UMSS build_dot(const DisplayConfig& display_config);
+  UMAPSS_PTR build_dot(std::unique_ptr<DisplayConfig> config);
 
-  UMSS build_right(const DisplayConfig& display_config);
+  UMAPSS_PTR build_right(std::unique_ptr<DisplayConfig> config);
 
-  UMSS build_natural(const DisplayConfig& display_config);
+  UMAPSS_PTR build_natural(std::unique_ptr<DisplayConfig> config);
 
   int comma_position_ = kDefulatNoComma;
 
   std::unordered_map<string, CurrencyContext> ccontexts_;
 
-  std::function<UMSS(const DisplayConfig&)> build_method_;
-
+  std::function<UMAPSS_PTR(std::unique_ptr<DisplayConfig>)> build_method_;
 };
 
 //
 // -----------------------------------------------------------------------------
 // DisplayFormatter Definition.
-//
 // -----------------------------------------------------------------------------
-template <class T>
-class DisplayFormatter : {
+class DisplayFormatter {
  public:
-  explicit DisplayFormatter(
-      const DisplayContext* display_context,
-      const DisplayConfig* display_config,
-      const std::unordered_map<string, string>* fmtstrings) {
-    display_context_ = display_context;
-    display_config_ = display_config;
-    fmtstrings_ = fmtstrings;
+  explicit DisplayFormatter(std::unique_ptr<DisplayConfig> display_config,
+                            UMAPSS_PTR fmtstrings) {
+    dconfig_ = std::move(display_config);
+    fmtstrings_ = std::move(fmtstrings);
   };
 
-  void Format(const T& number, currency = DisplayContext::kDefulatCurrency);
+  template <class T>
+  string Format(const T& number,
+              const string& currency = DisplayContext::kDefulatCurrency) {
+    if (dconfig_->comma_position == 0) {
+      CHECK(fmtstrings_->count(currency)) << "Not find currency: " << currency;
+      ::testing::internal::CaptureStdout();
+      printf(fmtstrings_->find(currency)->second.c_str(), number);
+      return ::testing::internal::GetCapturedStdout();
+    }
+    else {
+      return "TODO";
+    }
+  }
 
  private:
-  const DisplayContext* display_context_;                 // Not owned
-  const DisplayConfig* display_config_;                   // Not owned
-  const std::unordered_map<string, string>* fmtstrings_;  // Not owned
+  std::unique_ptr<DisplayConfig> dconfig_;  // Not owned
+  UMAPSS_PTR fmtstrings_;                   // Not owned
 };
 
 template <>
-class DisplayFormatter<Decimal>;
-
-inline void DisplayFormatter<Decimal>::Format(const Decimal& number,
-                                                 currency = "__default__") {
-  if (display_config_.comma_position == 0) {
-    CHECK(fmtstrings_.count(currency)) << "Not find currency: " << currency;
-    printf(fmtstrings_[currency].c_str(), stod(number.ToString()));
-  }
-  else {
-    // Print with comma_position
-  }
-}
-
-// Define default display config.
-const DisplayConfig DisplayContext::kDefaultConfig = DisplayConfig();
-
-const string DisplayContext::kDefulatCurrency = "__default__";
+string DisplayFormatter::Format(const Decimal& number, const string& currency);
 
 }  // namespace beanquick
 

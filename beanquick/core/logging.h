@@ -183,33 +183,33 @@ string *MakeCheckOpString(const T1 &v1, const T2 &v2, const char *exprtext) {
 // unnamed enum type - see comment below.
 // The (size_t, int) and (int, size_t) specialization are to handle unsigned
 // comparison errors while still being thorough with the comparison.
-#define BEAN_DEFINE_CHECK_OP_IMPL(name, op)                              \
-  template <typename T1, typename T2>                                    \
-  inline string *name##Impl(const T1 &v1, const T2 &v2,                  \
-                            const char *exprtext) {                      \
-    if (BEAN_PREDICT_TRUE(v1 op v2))                                     \
-      return NULL;                                                       \
-    else                                                                 \
-      return ::beanquick::internal::MakeCheckOpString(v1, v2, exprtext); \
-  }                                                                      \
-  inline string *name##Impl(int v1, int v2, const char *exprtext) {      \
-    return name##Impl<int, int>(v1, v2, exprtext);                       \
-  }                                                                      \
-  inline string *name##Impl(const size_t v1, const int v2,               \
-                            const char *exprtext) {                      \
-    if (BEAN_PREDICT_FALSE(v2 < 0)) {                                    \
-      return ::beanquick::internal::MakeCheckOpString(v1, v2, exprtext); \
-    }                                                                    \
-    const size_t uval = (size_t)((unsigned)v1);                          \
-    return name##Impl<size_t, size_t>(uval, v2, exprtext);               \
-  }                                                                      \
-  inline string *name##Impl(const int v1, const size_t v2,               \
-                            const char *exprtext) {                      \
-    if (BEAN_PREDICT_FALSE(v2 >= std::numeric_limits<int>::max())) {     \
-      return ::beanquick::internal::MakeCheckOpString(v1, v2, exprtext); \
-    }                                                                    \
-    const size_t uval = (size_t)((unsigned)v2);                          \
-    return name##Impl<size_t, size_t>(v1, uval, exprtext);               \
+#define BEAN_DEFINE_CHECK_OP_IMPL(name, op)                               \
+  template <typename T1, typename T2>                                     \
+  inline string *name##Impl(const T1 &v1, const T2 &v2,                   \
+                            const char *exprtext) {                       \
+    if (BEAN_PREDICT_TRUE(v1 op v2))                                      \
+      return NULL;                                                        \
+    else                                                                  \
+      return ::beanquick::internal::MakeCheckOpString(v1, v2, exprtext);  \
+  }                                                                       \
+  inline string *name##Impl(int v1, int v2, const char *exprtext) {       \
+    return name##Impl<int, int>(v1, v2, exprtext);                        \
+  }                                                                       \
+  inline string *name##Impl(const size_t v1, const int v2,                \
+                            const char *exprtext) {                       \
+    if (BEAN_PREDICT_FALSE(v2 < 0)) {                                     \
+      return ::beanquick::internal::MakeCheckOpString(v1, v2, exprtext);  \
+    }                                                                     \
+    const size_t uval = (size_t)((unsigned)v1);                           \
+    return name##Impl<size_t, size_t>(uval, v2, exprtext);                \
+  }                                                                       \
+  inline string *name##Impl(const int v1, const size_t v2,                \
+                            const char *exprtext) {                       \
+    if (BEAN_PREDICT_FALSE((int)v2 >= std::numeric_limits<int>::max())) { \
+      return ::beanquick::internal::MakeCheckOpString(v1, v2, exprtext);  \
+    }                                                                     \
+    const size_t uval = (size_t)((unsigned)v2);                           \
+    return name##Impl<size_t, size_t>(v1, uval, exprtext);                \
   }
 
 // We use the full name Check_EQ, Check_NE, etc. in case the file including

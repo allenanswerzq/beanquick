@@ -7,7 +7,6 @@
 
 #include "absl/strings/str_replace.h"
 #include "beanquick/core/base.h"
-
 #include "third_party/fixed/include/Number.h"
 
 namespace beanquick {
@@ -50,6 +49,8 @@ class Decimal : public ::fixed::Number {
   int Fractional() const { return frac_count_; }
 
   int Integer() const { return integer_count_; }
+
+  string ToString() const { return toString(); }
 
   friend Decimal operator-(const Decimal &from);
 
