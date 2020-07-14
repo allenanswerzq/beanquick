@@ -111,7 +111,7 @@ inline DisplayFormatter DisplayContext::Build(DisplayConfig config) {
     build_method_ = absl::bind_front(&DisplayContext::build_dot, this);
   }
   else {
-    CHECK(false) << "Unknown alignment: " << int(config.alignment);
+    LOG(FATAL) << "Unknown alignment: " << int(config.alignment);
   }
   // TODO(zq7): looks ugly I would say.
   auto umass_ptr = build_method_(absl::make_unique<DisplayConfig>(config));

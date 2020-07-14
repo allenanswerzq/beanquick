@@ -72,14 +72,16 @@ enum class DisplayAlignment {
 
 class CurrencyContext {
  public:
-  CurrencyContext(){};
+  CurrencyContext() {};
 
+  // Use a decial to update this context.
   void Update(const Decimal& decimal) {
     has_sign_ = decimal.HasSign();
     frac_dist_.Update(decimal.Fractional());
     integer_max_ = std::max(decimal.Integer(), integer_max_);
   }
 
+  // Whether this context has signed currency.
   bool HasSign() { return has_sign_; }
 
   int Integer() { return integer_max_; }
@@ -95,7 +97,7 @@ class CurrencyContext {
       return frac_dist_.Max();
     }
     else {
-      CHECK(false) << "Unknown precision: ";
+      LOG(FATAL) << "Unknown precision: ";
       return 0;
     }
   }
@@ -143,6 +145,16 @@ class CurrencyContext {
 // DisplayContext Definition.
 //
 // -----------------------------------------------------------------------------
+struct DisplayConfig {
+  bool noinit = true;
+  int reserved = 0;
+  int comma_position = 3;
+  DisplayAlignment alignment = DisplayAlignment::NATURAL;
+  DisplayPrecision precision = DisplayPrecision::MOST_COMMON;
+};
+
+class DisplayFormatter;
+
 //
 // DisplayContext dcontext;
 // DisplayConfig config;
@@ -150,20 +162,6 @@ class CurrencyContext {
 // config.alignment = DisplayAlignment::RIGHT;
 // dcontext.Build(config);
 //
-typedef struct {
-  bool noinit = true;
-  int reserved = 0;
-  int comma_position = 3;
-  DisplayAlignment alignment = DisplayAlignment::NATURAL;
-  DisplayPrecision precision = DisplayPrecision::MOST_COMMON;
-} DisplayConfig;
-
-class DisplayFormatter;
-
-typedef std::unordered_map<string, string> UMAPSS;
-
-typedef std::unique_ptr<UMAPSS> UMAPSS_PTR;
-
 class DisplayContext {
  public:
   DisplayContext() { ccontexts_[kDefulatCurrency] = CurrencyContext(); }
@@ -172,7 +170,7 @@ class DisplayContext {
 
   const int kDefulatNoComma = 0;
 
-  static const string kDefulatCurrency;
+  static const std::string kDefulatCurrency;
 
   static const DisplayConfig kDefaultConfig;
 
@@ -193,17 +191,17 @@ class DisplayContext {
   DisplayFormatter Build(DisplayConfig config = kDefaultConfig);
 
  private:
-  UMAPSS_PTR build_dot(std::unique_ptr<DisplayConfig> config);
+  UMAPSS_PTR build_dot(const DisplayConfig& config);
 
-  UMAPSS_PTR build_right(std::unique_ptr<DisplayConfig> config);
+  UMAPSS_PTR build_right(const DisplayConfig& config);
 
-  UMAPSS_PTR build_natural(std::unique_ptr<DisplayConfig> config);
+  UMAPSS_PTR build_natural(const DisplayConfig& config);
 
   int comma_position_ = kDefulatNoComma;
 
   std::unordered_map<string, CurrencyContext> ccontexts_;
 
-  std::function<UMAPSS_PTR(std::unique_ptr<DisplayConfig>)> build_method_;
+  std::function<UMAPSS_PTR(const DisplayConfig&)> build_method_;
 };
 
 //
@@ -233,8 +231,8 @@ class DisplayFormatter {
   }
 
  private:
-  std::unique_ptr<DisplayConfig> dconfig_;  // Not owned
-  UMAPSS_PTR fmtstrings_;                   // Not owned
+  std::unique_ptr<DisplayConfig> dconfig_;
+  UMAPSS_PTR fmtstrings_;
 };
 
 template <>
